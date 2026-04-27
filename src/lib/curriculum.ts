@@ -639,12 +639,14 @@ function buildQuiz(prefix: string, seeds: QuizSeed[], shortChecks: ModuleSeed["s
 
   // Just use questions as-is, no variants
   seeds.forEach((seed, index) => {
+    const rotatedOptions = [...rotateOptions(seed.options, index)];
+    // Ensure answer is always the first option (A)
     out.push(
       mcq(
         `${prefix}_mcq_${index + 1}`,
         `${seed.stem}?`,
-        [...rotateOptions(seed.options, index)],
-        seed.answer,
+        rotatedOptions,
+        rotatedOptions[0], // Always first option
         seed.topic,
       ),
     );
