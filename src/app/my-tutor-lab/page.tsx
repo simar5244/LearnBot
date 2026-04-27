@@ -135,14 +135,22 @@ export default function MyTutorLabPage() {
                         <div style={{ fontWeight: 700, marginBottom: 8 }}>{q.prompt}</div>
                         {q.type === "mcq" && q.options && (
                           <div className="list">
-                            {q.options.map((opt) => (
-                              <label key={opt} className="choice">
+                            {q.options.map((opt, idx) => (
+                              <label 
+                                key={`${q.id}-${idx}`} 
+                                className="choice"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  setAnswers((prev) => ({ ...prev, [q.id]: opt }));
+                                }}
+                              >
                                 <input
                                   type="radio"
                                   name={q.id}
                                   value={opt}
                                   checked={answers[q.id] === opt}
                                   onChange={() => setAnswers((prev) => ({ ...prev, [q.id]: opt }))}
+                                  onClick={(e) => e.stopPropagation()}
                                 />
                                 <span>{opt}</span>
                               </label>
