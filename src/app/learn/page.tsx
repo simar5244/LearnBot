@@ -432,7 +432,7 @@ function FeedbackList({ feedback }: { feedback: Feedback[] }) {
             <strong>{item.prompt}</strong>
             <span className={item.correct ? "state-ok" : "state-bad"}>{item.correct ? "Correct" : "Incorrect"}</span>
           </div>
-          <div className="muted" style={{ marginTop: 6 }}>Your answer: {item.userAnswer || "No answer"}</div>
+          <div className="muted" style={{ marginTop: 6 }}>Your answer: {item.userAnswer ?? "No answer"}</div>
           <div style={{ marginTop: 6 }}>Expected: {item.expected}</div>
         </div>
       ))}

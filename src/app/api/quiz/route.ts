@@ -94,7 +94,7 @@ export async function POST(req: Request) {
   const feedback: Array<{ id: string; correct: boolean; expected: string; userAnswer: string; prompt: string }> = [];
 
   for (const q of quiz) {
-    const userAnswer = String(answers[q.id] || "").trim();
+    const userAnswer = answers[q.id] !== undefined && answers[q.id] !== null ? String(answers[q.id]).trim() : "";
     const expected = String(q.answer || "").trim();
     if (userAnswer.toLowerCase() === expected.toLowerCase()) {
       correct += 1;
