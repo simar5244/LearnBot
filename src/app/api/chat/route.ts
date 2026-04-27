@@ -7,17 +7,23 @@ async function answerFallback() {
 }
 
 async function answerAI(message: string, language: string) {
-  const apiKey = process.env.OPENAI_API_KEY;
+  const groqApiKey = process.env.GROQ_API_KEY;
+  const openaiKey = process.env.OPENAI_API_KEY;
+  
+  // Prefer Groq if available, fallback to OpenAI
+  const apiKey = groqApiKey || openaiKey;
   if (apiKey === undefined || apiKey.length === 0) return answerFallback();
 
-  const model = process.env.OPENAI_MODEL || "gpt-4o-mini";
+  const model = process.env.GROQ_MODEL || process.env.OPENAI_MODEL || "llama-3.3-70b-versatile";
+  const apiUrl = groqApiKey ? "https://api.groq.com/openai/v1/chat/completions" : "https://api.openai.com/v1/chat/completions";
+  
   const prompt =
     "You are a friendly tutor. Answer in short steps. Language: " +
     language +
     ". Question: " +
     message;
 
-  const res = await fetch("https://api.openai.com/v1/chat/completions", {
+  const res = await fetch(apiUrl, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
