@@ -280,8 +280,14 @@ function fallbackQuizForTopic(topic: string): QuizQuestion[] {
 }
 
 async function generateQuizAndGuide(topic: string, language: string): Promise<{ guidance: string; quiz: QuizQuestion[] }> {
-  const apiKey = process.env.OPENAI_API_KEY;
-  const model = process.env.OPENAI_MODEL || "gpt-4o-mini";
+  const groqApiKey = process.env.GROQ_API_KEY;
+  const openaiKey = process.env.OPENAI_API_KEY;
+  
+  // Prefer Groq if available, fallback to OpenAI
+  const apiKey = groqApiKey || openaiKey;
+  const model = process.env.GROQ_MODEL || process.env.OPENAI_MODEL || "llama-3.3-70b-versatile";
+  const apiUrl = groqApiKey ? "https://api.groq.com/openai/v1/chat/completions" : "https://api.openai.com/v1/chat/completions";
+  
   if (!apiKey) {
     return {
       guidance: `Focus on ${topic} in ${language}: run short drills, verify state transitions, and explain every correction in your own words.`,
@@ -302,7 +308,7 @@ Return JSON with:
 Give 10 distinct questions. No markdown.`;
 
   try {
-    const res = await fetch("https://api.openai.com/v1/chat/completions", {
+    const res = await fetch(apiUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
