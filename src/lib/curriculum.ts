@@ -636,35 +636,35 @@ function short(id: string, prompt: string, answer: string, topic: string): QuizQ
 
 function buildQuiz(prefix: string, seeds: QuizSeed[], shortChecks: ModuleSeed["shortChecks"]): QuizQuestion[] {
   const out: QuizQuestion[] = [];
-  const variants = [
-    "concept",
-    "scenario",
-  ] as const;
 
-  function buildPrompt(stem: string, variant: (typeof variants)[number], index: number) {
-    if (variant === "concept") return `${stem}?`;
-    return `Scenario ${index + 1}: teammate asks "${stem}". Which answer is correct?`;
-  }
-
+  // Just use questions as-is, no variants
   seeds.forEach((seed, index) => {
-    variants.forEach((variant, variantIndex) => {
-      out.push(
-        mcq(
-          `${prefix}_mcq_${index * 2 + variantIndex + 1}`,
-          buildPrompt(seed.stem, variant, index),
-          [...rotateOptions(seed.options, index + variantIndex)],
-          seed.answer,
-          seed.topic,
-        ),
-      );
-    });
+    out.push(
+      mcq(
+        `${prefix}_mcq_${index + 1}`,
+        `${seed.stem}?`,
+        [...rotateOptions(seed.options, index)],
+        seed.answer,
+        seed.topic,
+      ),
+    );
   });
 
   shortChecks.forEach((item, index) => {
     out.push(short(`${prefix}_short_${index + 1}`, item.prompt, item.answer, item.topic));
   });
 
-  return out.slice(0, 10);
+  // Shuffle all questions
+  return shuffleArray(out).slice(0, 10);
+}
+
+function shuffleArray<T>(array: T[]): T[] {
+  const arr = [...array];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
 }
 
 function buildVideos(languageId: SupportedLanguage, moduleId: string, title: string): Video[] {
