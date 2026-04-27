@@ -390,24 +390,19 @@ function QuestionCard({
   answers: Record<string, string>;
   setAnswers: Dispatch<SetStateAction<Record<string, string>>>;
 }) {
-  const handleChange = (opt: string) => {
-    console.log('Selected answer for', q.id, ':', opt);
-    setAnswers((prev) => ({ ...prev, [q.id]: opt }));
-  };
-
   return (
     <div className="sidebar-card quiz-card">
       <div style={{ fontWeight: 700, marginBottom: 8 }}>{q.prompt}</div>
       {q.type === "mcq" && q.options && (
         <div className="list">
-          {q.options.map((opt) => (
-            <label key={opt} className="choice">
+          {q.options.map((opt, idx) => (
+            <label key={`${q.id}-${idx}`} className="choice">
               <input
                 type="radio"
                 name={q.id}
                 value={opt}
                 checked={answers[q.id] === opt}
-                onChange={() => handleChange(opt)}
+                onChange={() => setAnswers((prev) => ({ ...prev, [q.id]: opt }))}
               />
               <span>{opt}</span>
             </label>
